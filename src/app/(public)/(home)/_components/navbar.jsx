@@ -1,0 +1,144 @@
+"use client";
+
+import LogoPurple from "@/assets/images/gupt-vrindavan-dham-logo-purple.png";
+import LogoWhite from "@/assets/images/gupt-vrindavan-dham-logo.png";
+import Link from "next/link";
+import {
+  Menubar,
+  MenubarMenu,
+  MenubarContent,
+  MenubarItem,
+  MenubarTrigger,
+} from "./menubar";
+import allNavLinks from "./all-nav-links";
+import { Button } from "@/components/ui/button";
+import * as PhoneMenubar from "./phone-menubar";
+import { ActiveLink } from "@/components/misc/active-link";
+import clsx from "clsx";
+import { Image } from "@/components/image";
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ;
+
+export default function Navbar() {
+  return (
+    <>
+      <div className="flex sticky top-0 left-0  h-14 text-sm z-50 shadow-md bg-nav-background text-on-surface px-2 max-w-full items-center justify-center">
+        <div className="max-w-7xl flex w-full items-center justify-between h-full mx-auto font-medium px-4">
+          <Link href={BASE_URL} className="">
+            <Image
+              loadingAnimation={false}
+              className="h-auto max-w-[67px] m:max-w-none w-auto sm:max-h-[40px]"
+              width={87}
+              height={52}
+              src={LogoWhite}
+              alt="Logo"
+            />
+          </Link>
+
+          <Menubar className="hidden min-[900px]:flex gap-10 whitespace-nowrap py-1 h-full justify-center items-center text-sm flex-grow select-none font-semibold">
+            {allNavLinks.desktop.map((item, index) => {
+              if (!item.children)
+                return (
+                  <ActiveLink
+                    key={index}
+                    href={
+                      item.title.toLowerCase() === "festivals"
+                        ? `${process.env.NEXT_PUBLIC_BASE_URL}${item.to}`
+                        : item.to
+                    }
+                    className={(isActive) =>
+                      clsx(
+                        "hover:text-primary hover:underline",
+                        isActive && "text-primary"
+                      )
+                    }
+                  >
+                    {item.title}
+                  </ActiveLink>
+                );
+
+              return (
+                <MenubarMenu key={index}>
+                  <MenubarTrigger isActive={false}>{item.title}</MenubarTrigger>
+
+                  <MenubarContent className="grid grid-cols-1 bg-surface text-on-surface font-semibold">
+                    {item.children.map((child, index) => {
+                      return (
+                        <MenubarItem asChild isActive={false} key={index}>
+                          <ActiveLink
+                            href={`${process.env.NEXT_PUBLIC_BASE_URL}${child.to}`}
+                          >
+                            {child.title}
+                          </ActiveLink>
+                        </MenubarItem>
+                      );
+                    })}
+                  </MenubarContent>
+                </MenubarMenu>
+              );
+            })}
+          </Menubar>
+
+
+        </div>
+      </div>
+
+      <div className="fixed bottom-0 z-50 shadow-md min-[900px]:hidden w-full bg-surface text-on-surface h-16 flex items-center justify-around text-xs border-t border-outline">
+        {allNavLinks.mobile.map((item, index) => {
+          if (!item.children)
+            return (
+              <PhoneMenubar.Link
+                key={index}
+                icon={<div className="text-xl">{item.icon}</div>}
+                title={item.title}
+                to={item.to}
+              />
+            );
+
+          return (
+            <PhoneMenubar.Root key={index}>
+              <PhoneMenubar.Trigger
+                icon={<div className="text-xl">{item.icon}</div>}
+                title={item.title}
+              />
+
+              <PhoneMenubar.Content>
+                {item.children.map((child, index) => {
+                  if (!child.children?.length) {
+                    return (
+                      <PhoneMenubar.LinkItem
+                        key={index}
+                        to={`${process.env.NEXT_PUBLIC_BASE_URL}${child.to}`}
+                        title={child.title}
+                      />
+                    );
+                  }
+
+                  return (
+                    <PhoneMenubar.Accordion key={index} type="single">
+                      <PhoneMenubar.AccordionItem value={child.title}>
+                        <PhoneMenubar.AccordionTrigger>
+                          {child.title}
+                        </PhoneMenubar.AccordionTrigger>
+
+                        <PhoneMenubar.AccordionContent>
+                          {child.children.map((child, index) => (
+                            <PhoneMenubar.LinkItem
+                              key={index}
+                              to={`${process.env.NEXT_PUBLIC_BASE_URL}${child.to}`}
+                              title={child.title}
+                            />
+                          ))}
+                        </PhoneMenubar.AccordionContent>
+                      </PhoneMenubar.AccordionItem>
+                    </PhoneMenubar.Accordion>
+                  );
+                })}
+              </PhoneMenubar.Content>
+            </PhoneMenubar.Root>
+          );
+        })}
+      </div>
+    </>
+  );
+}

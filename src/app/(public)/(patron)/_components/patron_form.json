@@ -1,0 +1,14 @@
+{
+    "patronType": "string",
+    "donor_name": "string",
+    "sevak_name": "string (optional)",
+    "phone": "string",
+    "email": "string",
+    "gender": "male | female | other",
+    "full_address": "string",
+    "pincode": "string",
+    "pan": "string | optional",
+    "occupation": "string",
+    "message": "string",
+    "name_inscription": "string | optional"
+  }
