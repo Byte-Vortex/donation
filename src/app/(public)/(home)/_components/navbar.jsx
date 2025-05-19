@@ -16,14 +16,28 @@ import * as PhoneMenubar from "./phone-menubar";
 import { ActiveLink } from "@/components/misc/active-link";
 import clsx from "clsx";
 import { Image } from "@/components/image";
+import { useEffect, useState } from "react";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ;
 
 export default function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const handleScroll = () => {
+        const scrollPosition = window.scrollY;
+        setIsScrolled(scrollPosition > 50);
+      };
+      window.addEventListener('scroll', handleScroll);
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+      };
+    }
+  })
   return (
     <>
-      <div className="flex sticky top-0 left-0  h-14 text-sm z-50 shadow-md bg-nav-background text-on-surface px-2 max-w-full items-center justify-center">
-        <div className="max-w-7xl flex w-full items-center justify-between h-full mx-auto font-medium px-4">
+      <div id="navbar" className={`sticky left-0 h-14 text-sm z-40 px-3 flex items-center transform ease-in-out duration-1000  justify-center bg-background ${isScrolled ? "top-1.5 mx-3 lg:mx-16 transition-all gap-10 backdrop-blur-md rounded-xl ease-in-out duration-700 outline-gray-300 outline outline-1  shadow-md" : "max-w-[100vw] top-0 lg:px-[7vw] w-full transition-[top] ease-in-out duration-700"}`}>
+        <div className={`flex items-center justify-between h-full font-medium gap-10 w-full`}>
           <Link href={BASE_URL} className="">
             <Image
               loadingAnimation={false}
@@ -34,7 +48,6 @@ export default function Navbar() {
               alt="Logo"
             />
           </Link>
-
           <Menubar className="hidden min-[900px]:flex gap-10 whitespace-nowrap py-1 h-full justify-center items-center text-sm flex-grow select-none font-semibold">
             {allNavLinks.desktop.map((item, index) => {
               if (!item.children)
@@ -78,12 +91,10 @@ export default function Navbar() {
               );
             })}
           </Menubar>
-
-
         </div>
       </div>
 
-      <div className="fixed bottom-0 z-50 shadow-md min-[900px]:hidden w-full bg-surface text-on-surface h-16 flex items-center justify-around text-xs border-t border-outline">
+      <div id='mobileNavbar' className="fixed bottom-0 z-50 shadow-md min-[900px]:hidden w-full bg-surface text-on-surface h-16 flex items-center justify-around text-xs border-t border-outline">
         {allNavLinks.mobile.map((item, index) => {
           if (!item.children)
             return (
